@@ -26,7 +26,6 @@ io.on('connection', (socket) => {
   console.log('A user connected');
 
   socket.emit('initialDraw', drawingData);
-
   socket.on('draw', (data) => {
     drawingData.push(data);
     socket.broadcast.emit('draw', data);
@@ -39,6 +38,30 @@ io.on('connection', (socket) => {
 
 
 app.post('/clearData', (req, res) => {
+  const { roomId } = req.body;
+
+  // Find indexes of objects with the specified roomId
+  const indexesToDelete = drawingData.reduce((acc, curr, index) => {
+    if (curr.roomId === roomId) {
+      acc.push(index);
+    }
+    return acc;
+  }, []);
+
+  // Remove objects with specified roomId from drawingData
+  indexesToDelete.reverse().forEach(index => {
+    drawingData.splice(index, 1);
+  });
+
+  // Emit event to notify clients
+  io.emit('clearData');
+
+  console.log(`Drawing data for roomId ${roomId} cleared successfully`);
+  
+  res.status(200).send(`Data for roomId ${roomId} cleared successfully`);
+});
+
+app.post('/clearallData', (req, res) => {
   console.log("Hello")
   drawingData = [];
   io.emit('clearData'); 

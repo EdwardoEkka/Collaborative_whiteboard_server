@@ -13,6 +13,10 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 app.use(cors());
 
+
+
+
+//Socket
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
@@ -68,6 +72,7 @@ app.post('/clearallData', (req, res) => {
   res.status(200).send('Data cleared successfully');
 });
 
+//
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 module.exports = app;
